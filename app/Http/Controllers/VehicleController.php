@@ -167,15 +167,12 @@ class VehicleController extends Controller
         $vehicle = DB::table('vehicles')->where('id', $registerId)->first();
 
         if ($request->hasFile('img')) {
-
-            // return 'new img and delete old img';
             $file = $request->file('img');
             $imageNameWithExt = $file->getClientOriginalName();
             $img = time() . $imageNameWithExt;
             $file->move('img/', $img);
             unlink('img/' . $vehicle->img);
         } else {
-
             $img = $vehicle->img;
         }
 
@@ -206,13 +203,16 @@ class VehicleController extends Controller
                     'img' => $img
                 ]);
 
+            return [
+                'is_approve' => $request->is_approve,
+                'description' => $request->description
+            ];
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->responseError('An error occurred while processing your request');
         }
-
-        return ['message' => 'Update successfully'];
     }
 
     /**

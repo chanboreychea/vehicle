@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -16,6 +16,7 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'email' => ['required','email',Rule::unique('users', 'email')],
             'password' => 'required',
         ]);
 
@@ -26,7 +27,7 @@ class AuthController extends Controller
         $user = User::create(
             [
                 'name' => $request['name'],
-                'email' => '',
+                'email' => $request->email,
                 'password' => bcrypt($request['password']),
             ]
         );
