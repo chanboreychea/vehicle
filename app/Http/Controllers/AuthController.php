@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 
 class AuthController extends Controller
@@ -13,17 +14,20 @@ class AuthController extends Controller
     public function register(Request $request)
     {
 
-        $fields = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email',
             'password' => 'required',
         ]);
 
+        if ($validator->fails()) {
+            return $this->responseError(self::BAD_REQUEST, $validator->errors()->messages());
+        }
+
         $user = User::create(
             [
-                'name' => $fields['name'],
-                'email' => $fields['email'],
-                'password' => bcrypt($fields['password']),
+                'name' => $request['name'],
+                'email' => '',
+                'password' => bcrypt($request['password']),
             ]
         );
 
@@ -40,16 +44,20 @@ class AuthController extends Controller
     public function login(Request $request)
     {
 
-        $fields = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'password' => 'required',
         ]);
 
+        if ($validator->fails()) {
+            return $this->responseError(self::BAD_REQUEST, $validator->errors()->messages());
+        }
+
         //check email
-        $user = User::where('name', $fields['name'])->first();
+        $user = User::where('name', $request['name'])->first();
 
         //check password
-        if (!$user || !Hash::check($fields['password'], $user->password)) {
+        if (!$user || !Hash::check($request['password'], $user->password)) {
             return Response([
                 'message' => 'wrong password'
             ], 401);

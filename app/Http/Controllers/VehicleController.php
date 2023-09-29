@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enum\VehicleRegisterStatus;
 use App\Models\Vehicle;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -104,7 +105,8 @@ class VehicleController extends Controller
      */
     public function show(string $registerId)
     {
-        //
+        $vehicle = DB::table('vehicles')->where('id', $registerId)->first();
+        return response(['data' => $vehicle]);
     }
 
     /**
