@@ -11,22 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicles', function (Blueprint $table) {
+        Schema::create('cards', function (Blueprint $table) {
             $table->id();
-            $table->string("userId", 100)->unique();
             $table->string("firstNameKh", 100);
             $table->string("lastNameKh", 100);
             $table->string("firstName", 100);
             $table->string("lastName", 100);
             $table->string("role", 100);
             $table->string("entityName", 100);
+            $table->string("areaCode",100);
             $table->string("phoneNumber", 20)->unique();
-            $table->string("email", 100)->unique();
             $table->string("address", 255);
-            $table->string("vehicleReleaseYear");
-            $table->string("vehicleLicensePlate", 100)->unique();
-            $table->string("vehicleModel", 100);
-            $table->string("vehicleColor", 100);
+            $table->string("img", 255);
             $table->string("description", 255)->nullable();
             $table->boolean("isApprove");
             $table->timestamps();
@@ -38,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicles');
+        Schema::dropIfExists('cards');
     }
 };

@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-class VehicleRegisterStatus
+class RegisterStatus
 {
     const APPROVE = 1;
     const PENDING = 2;
