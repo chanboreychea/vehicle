@@ -228,18 +228,21 @@ class VehicleController extends Controller
             return $this->responseError(self::BAD_REQUEST, $validator->errors()->messages());
         }
 
-        DB::table('vehicles')
-            ->where('id', $registerId)
-            ->update([
+        $vehicle = Vehicle::find($registerId);
+        if ($vehicle) {
+
+            $vehicle->update([
                 'isApprove' => $request->is_approve,
                 'description' => $request->description,
                 'updated_at' => Carbon::now()->format("Y-m-d h:i:s")
             ]);
 
-        return [
-            'is_approve' => $request->is_approve,
-            'description' => $request->description
-        ];
+            return [
+                'is_approve' => $request->is_approve,
+                'description' => $request->description
+            ];
+        }
+        return ['message' => 'Id does not exist'];
     }
 
     public function destroy(string $registerId)
