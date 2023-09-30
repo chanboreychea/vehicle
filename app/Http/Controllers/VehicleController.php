@@ -244,7 +244,12 @@ class VehicleController extends Controller
 
     public function destroy(string $registerId)
     {
-        Vehicle::find($registerId)->delete();
-        return ['message' => 'Delete succesfully'];
+        $vehicle = Vehicle::find($registerId);
+        if ($vehicle) {
+            unlink('img/' . $vehicle->img);
+            $vehicle->delete();
+            return ['message' => 'Delete succesfully'];
+        }
+        return ['message' => 'Id does not exist'];
     }
 }
