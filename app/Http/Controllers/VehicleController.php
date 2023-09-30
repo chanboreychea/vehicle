@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enum\VehicleRegisterStatus;
 use App\Models\Vehicle;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -13,26 +12,41 @@ use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        $vehicle = Vehicle::all()->where('isApprove', VehicleRegisterStatus::PENDING);
+        $query = DB::table('vehicles')->select([
+            'id',
+            'userId',
+            'firstNameKh',
+            'lastNameKh',
+            'firstName',
+            'lastName',
+            'role',
+            'entityName',
+            'phoneNumber',
+            'email',
+            'address',
+            'vehicleReleaseYear',
+            'vehicleLicensePlate',
+            'vehicleModel',
+            'vehicleColor',
+            'description',
+            'isApprove',
+            'img'
+        ]);
+
+        if ($request->is_approve) {
+            $query->where('isApprove', $request->is_approve);
+        } else {
+            $query->where('isApprove', VehicleRegisterStatus::APPROVE);
+        }
+
+        $vehicle = $query->get();
+
         return response(['data' => $vehicle]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -88,7 +102,7 @@ class VehicleController extends Controller
                 'description' => $request->description,
                 'isApprove' => $request->is_approve,
                 'img' => $img,
-                'created_at' => Carbon::now()->format('Y-m-d')
+                'created_at' => Carbon::now()->format('Y-m-d h:i:s')
             ]);
 
             DB::commit();
@@ -100,26 +114,12 @@ class VehicleController extends Controller
         return $this->responseSuccess();
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $registerId)
     {
         $vehicle = DB::table('vehicles')->where('id', $registerId)->first();
         return response(['data' => $vehicle]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $registerId)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $registerId)
     {
         $validator = Validator::make($request->all(), [
@@ -154,7 +154,7 @@ class VehicleController extends Controller
             ],
             'vehicle_model' => ['required', 'max:100'],
             'vehicle_color' => ['required', 'max:100'],
-            'is_approve' => ['required', 'regex:/^(0|1){1}$/'],
+            'is_approve' => ['required', 'regex:/^(1|2|3){1}$/'],
             'description' => ['max:255'],
             'img' => ['image', 'max:5024'],
 
@@ -200,7 +200,8 @@ class VehicleController extends Controller
                     'vehicleColor' => $request->vehicle_color,
                     'description' => $request->description,
                     'isApprove' => $request->is_approve,
-                    'img' => $img
+                    'img' => $img,
+                    'updated_at' => Carbon::now()->format("Y-m-d h:i:s")
                 ]);
 
             return [
@@ -215,11 +216,35 @@ class VehicleController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function updateIsAprrove(Request $request, string $registerId)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'is_approve' => ['required', 'regex:/^(1|2|3){1}$/'],
+            'description' => ['max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->responseError(self::BAD_REQUEST, $validator->errors()->messages());
+        }
+
+        DB::table('vehicles')
+            ->where('id', $registerId)
+            ->update([
+                'isApprove' => $request->is_approve,
+                'description' => $request->description,
+                'updated_at' => Carbon::now()->format("Y-m-d h:i:s")
+            ]);
+
+        return [
+            'is_approve' => $request->is_approve,
+            'description' => $request->description
+        ];
+    }
+
     public function destroy(string $registerId)
     {
-        return 'delete';
+        Vehicle::find($registerId)->delete();
+        return ['message' => 'Delete succesfully'];
     }
 }

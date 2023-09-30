@@ -21,7 +21,7 @@ class Vehicle extends Model
         'phoneNumber',
         'email',
         'address',
-        'vechicleReleaseYear',
+        'vehicleReleaseYear',
         'vehicleLicensePlate',
         'vehicleModel',
         'vehicleColor',

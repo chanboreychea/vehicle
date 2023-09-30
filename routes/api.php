@@ -25,6 +25,8 @@ Route::post('/vehicle/registers', [VehicleController::class, 'store']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::patch('/vehicle/registers/{registerId}', [VehicleController::class, 'update']);
+    Route::patch('/vehicle/registers/isapprove/{registerId}', [VehicleController::class, 'updateIsAprrove']);
+
     Route::delete('/vehicle/registers/{registerId}', [VehicleController::class, 'destroy']);
 
 
