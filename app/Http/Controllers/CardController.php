@@ -32,8 +32,6 @@ class CardController extends Controller
 
         if ($request->is_approve) {
             $query->where('isApprove', $request->is_approve);
-        } else {
-            $query->where('isApprove', RegisterStatus::APPROVE);
         }
 
         $cards = $query->get();

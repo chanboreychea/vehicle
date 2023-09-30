@@ -28,7 +28,6 @@ Route::post('/vehicle/registers', [VehicleController::class, 'store']);
 // card
 Route::get('/cards', [CardController::class, 'index']);
 Route::get('/cards/{cardId}', [CardController::class, 'show']);
-
 Route::post('/cards', [CardController::class, 'store']);
 
 

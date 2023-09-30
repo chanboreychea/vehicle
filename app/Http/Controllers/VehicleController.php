@@ -33,15 +33,12 @@ class VehicleController extends Controller
             'vehicleColor',
             'description',
             'isApprove',
-            'img'
         ]);
 
         if ($request->is_approve) {
             $query->where('isApprove', $request->is_approve);
-        } else {
-            $query->where('isApprove', RegisterStatus::APPROVE);
         }
-
+        
         $vehicle = $query->get();
 
         return response(['data' => $vehicle]);
@@ -108,7 +105,10 @@ class VehicleController extends Controller
     public function show(string $registerId)
     {
         $vehicle = DB::table('vehicles')->where('id', $registerId)->first();
-        return response(['data' => $vehicle]);
+        if($vehicle){
+            return response(['data' => $vehicle]);
+        }
+        return response(['message' => 'Id does not exist']);
     }
 
     public function update(Request $request, string $registerId)
@@ -223,11 +223,13 @@ class VehicleController extends Controller
     public function destroy(string $registerId)
     {
         $vehicle = Vehicle::find($registerId);
+
         if ($vehicle) {
-            unlink('img/' . $vehicle->img);
             $vehicle->delete();
             return ['message' => 'Delete succesfully'];
         }
+
         return ['message' => 'Id does not exist'];
     }
+
 }
